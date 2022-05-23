@@ -1,5 +1,6 @@
 import socket
 import random
+
 ClientMultiSocket = socket.socket()
 host = '127.0.0.1'
 port = 2004
@@ -16,13 +17,34 @@ phand.append(pnum1)
 phand.append(pnum2)
 phand.append(pnum3)
 
+
+def game_logic(you, opponent):
+    winner = ""
+    p1numchoice = 0
+    p2numchoice = 0
+    player1 = "you"
+    player2 = "opponent"
+
+    if p1numchoice == p2numchoice:
+        winner = "draw"
+    elif p1numchoice > p2numchoice:
+        winner = player1
+    elif p1numchoice < p2numchoice:
+        winner = player2
+
+    return winner
+
+
 print('Waiting for Poker Server to implement')
 try:
     ClientMultiSocket.connect((host, port))
 except socket.error as e:
     print(str(e))
-res = ClientMultiSocket.recv(1024)
+res = ClientMultiSocket.recv(2048)
+print(res.decode('utf-8'))
 while True:
+    res = ClientMultiSocket.recv(2048)
+    print(res.decode('utf-8'))
     print("Your hand:", phand)
     Input = input('Enter a card to play: ')
 
