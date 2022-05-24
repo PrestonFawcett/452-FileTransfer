@@ -1,5 +1,9 @@
 import socket
 import random
+from Crypto.PublicKey import RSA
+from Crypto.PublicKey import DSA
+from Crypto.Random import get_random_bytes
+
 
 ClientMultiSocket = socket.socket()
 host = '127.0.0.1'
@@ -16,6 +20,30 @@ pnum3 = random.choice(numberoptions)
 phand.append(pnum1)
 phand.append(pnum2)
 phand.append(pnum3)
+
+def generate_RSA():
+    private_key = RSA.generate(2048)
+    public_key = private_key.publickey().export_key()
+    return public_key, private_key
+
+def generate_DSA():
+    private_key = DSA.generate(2048)
+    public_key = private_key.publickey().export_key()
+    return public_key, private_key
+    
+while True:
+    print("Choose RSA or DSA for encryption: ")
+    x = input()
+    if x == "RSA":
+        pubkey, privkey = generate_RSA()
+        break
+    elif x == "DSA":
+        pubkey, privkey = generate_DSA()
+        break
+    else:
+        print("Invalid")
+
+session_key = get_random_bytes(16)
 
 
 def game_logic(you, opponent):
