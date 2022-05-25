@@ -4,12 +4,16 @@ import socket
 from time import sleep
 from _thread import *
 import random
+from Crypto.PublicKey import RSA
+from Crypto.PublicKey import DSA
+from Crypto.Random import get_random_bytes
 
 # MAIN GAME WINDOW
 window_main = tk.Tk()
 window_main.title("Poker Client")
 window_main.resizable(width=False, height=False)
 your_name = ""
+dig_sig = ""
 opponent_name = ""
 game_round = 0
 game_timer = 4
@@ -35,13 +39,19 @@ client = None
 HOST_ADDR = "127.0.0.1"
 HOST_PORT = 8080
 
+digital_signature = tk.Frame(window_main)
 top_welcome_frame = tk.Frame(window_main)
+lbl_ds = tk.Label(digital_signature, text="Digital Signature:")
 lbl_name = tk.Label(top_welcome_frame, text="Name:")
+lbl_ds.pack(side=tk.LEFT)
 lbl_name.pack(side=tk.LEFT)
+ent_ds = tk.Entry(digital_signature)
 ent_name = tk.Entry(top_welcome_frame)
+ent_ds.pack(side=tk.LEFT)
 ent_name.pack(side=tk.LEFT)
 btn_connect = tk.Button(top_welcome_frame, text="Connect", command=lambda: connect())
 btn_connect.pack(side=tk.LEFT)
+digital_signature.pack(side=tk.TOP)
 top_welcome_frame.pack(side=tk.TOP)
 
 top_message_frame = tk.Frame(window_main)
@@ -153,8 +163,12 @@ def connect():
     global your_name
     if len(ent_name.get()) < 1:
         tk.messagebox.showerror(title="ERROR!!!", message="Please enter a valid name")
+    if ent_ds.get() != "RSA" and ent_ds.get() != "DSA":
+        print(ent_ds.get())
+        tk.messagebox.showerror(title="ERROR!!", message="Please enter a valid digital signature type (RSA or DSA)")
     else:
         your_name = ent_name.get()
+        dig_sig = ent_ds.get()
         lbl_your_score["text"] = "Your Score: " + str(your_score)
         connect_to_server(your_name)
 
@@ -195,7 +209,6 @@ def choice(arg, button):
             card3_used = True
         enable_disable_buttons("disable", card1_used, card2_used, card3_used)
 
-
 # connection to server
 def connect_to_server(name):
     global client, your_name
@@ -208,7 +221,9 @@ def connect_to_server(name):
         # disable widgets
         btn_connect.config(state=tk.DISABLED)
         ent_name.config(state=tk.DISABLED)
+        ent_ds.config(state=tk.DISABLED)
         lbl_name.config(state=tk.DISABLED)
+        lbl_ds.config(state=tk.DISABLED)
         enable_disable_buttons("disable", card1_used, card2_used, card3_used)
 
         # start a thread to keep receiving message from server
