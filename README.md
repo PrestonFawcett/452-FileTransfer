@@ -20,7 +20,7 @@ Preston Fawcett -
 
 Brock Gieszl -
 
-Benjamin Heng - 
+Benjamin Heng - contributed to client and server framework, contributed to document
 
 Chris Ly - 
 
