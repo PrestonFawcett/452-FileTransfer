@@ -20,14 +20,10 @@ your_score = 0
 opponent_score = 0
 
 # generate cards
-phand = []
 numberoptions = list(range(1, 13 + 3))
 pnum1 = random.choice(numberoptions)
 pnum2 = random.choice(numberoptions)
 pnum3 = random.choice(numberoptions)
-phand.append(pnum1)
-phand.append(pnum2)
-phand.append(pnum3)
 
 # network client
 client = None
@@ -111,41 +107,37 @@ btn_paper.grid(row=0, column=1)
 btn_scissors.grid(row=0, column=2)
 '''
 
-btn_card1 = tk.Button(button_frame, text=pnum1, command=lambda : choice(pnum1), state=tk.DISABLED)
-btn_card2 = tk.Button(button_frame, text=pnum2, command=lambda : choice(pnum2), state=tk.DISABLED)
-btn_card3 = tk.Button(button_frame, text=pnum3, command=lambda : choice(pnum3), state=tk.DISABLED)
+btn_card1 = tk.Button(button_frame, text=pnum1, command=lambda : choice(pnum1), state=tk.DISABLED, font = "Helvetica 13 bold")
+btn_card2 = tk.Button(button_frame, text=pnum2, command=lambda : choice(pnum2), state=tk.DISABLED, font = "Helvetica 13 bold")
+btn_card3 = tk.Button(button_frame, text=pnum3, command=lambda : choice(pnum3), state=tk.DISABLED, font = "Helvetica 13 bold")
 btn_card1.grid(row=0, column=0)
 btn_card2.grid(row=0, column=1)
 btn_card3.grid(row=0, column=2)
 button_frame.pack(side=tk.BOTTOM)
 
+button_frame.pack_forget()
+
 
 def game_logic(you, opponent):
-    winner = ""
-    rock = "rock"
-    paper = "paper"
-    scissors = "scissors"
+    p1choice = you
+    p2choice_raw1 = opponent.decode("utf-8")
+    p2choice_raw2 = p2choice_raw1.replace('b', '')
+    p2choice = int(p2choice_raw2.replace("'", ''))
     player0 = "you"
     player1 = "opponent"
 
-    if you == opponent:
+    print(p1choice)
+    print(p2choice)
+
+    if p1choice == p2choice:
         winner = "draw"
-    elif you == rock:
-        if opponent == paper:
-            winner = player1
-        else:
-            winner = player0
-    elif you == scissors:
-        if opponent == rock:
-            winner = player1
-        else:
-            winner = player0
-    elif you == paper:
-        if opponent == scissors:
-            winner = player1
-        else:
-            winner = player0
+    elif p1choice > p2choice:
+        winner = player0
+    elif p1choice < p2choice:
+        winner = player1
+
     return winner
+
 
 def enable_disable_buttons(todo):
     if todo == "disable":
@@ -163,9 +155,9 @@ def enable_disable_buttons(todo):
         btn_paper.config(state=tk.NORMAL)
         btn_scissors.config(state=tk.NORMAL)
         '''
-        btn_card1.config(state=tk.DISABLED)
-        btn_card2.config(state=tk.DISABLED)
-        btn_card3.config(state=tk.DISABLED)
+        btn_card1.config(state=tk.NORMAL)
+        btn_card2.config(state=tk.NORMAL)
+        btn_card3.config(state=tk.NORMAL)
 
 def connect():
     global your_name
@@ -198,10 +190,10 @@ def count_down(my_timer, nothing):
 def choice(arg):
     global your_choice, client, game_round
     your_choice = arg
-    lbl_your_choice["text"] = "Your choice: " + your_choice
+    lbl_your_choice["text"] = "Your choice: " + str(your_choice)
 
     if client:
-        client.send(("Game_Round"+str(game_round)+your_choice).encode())
+        client.send(("Game_Round"+str(game_round)+str(your_choice)).encode())
         enable_disable_buttons("disable")
 
 
@@ -228,6 +220,7 @@ def connect_to_server(name):
 def receive_message_from_server(sck, m):
     global your_name, opponent_name, game_round
     global your_choice, opponent_choice, your_score, opponent_score
+    global phand, pnum1, pnum2, pnum3
 
     while True:
         from_server = sck.recv(4096)
@@ -246,6 +239,7 @@ def receive_message_from_server(sck, m):
             lbl_opponent_name["text"] = "Opponent: " + str(opponent_name)
             top_frame.pack()
             middle_frame.pack()
+            button_frame.pack()
 
             # we know two users are connected so game is ready to start
             start_new_thread(count_down, (game_timer, ""))
@@ -293,6 +287,19 @@ def receive_message_from_server(sck, m):
 
                 enable_disable_buttons("disable")
                 game_round = 0
+                your_score = 0
+                opponent_score = 0
+
+                # generate new cards
+                pnum1 = random.choice(numberoptions)
+                pnum2 = random.choice(numberoptions)
+                pnum3 = random.choice(numberoptions)
+
+                btn_card1.config(text=pnum1)
+                btn_card2.config(text=pnum2)
+                btn_card3.config(text=pnum3)
+                button_frame.pack_forget()
+                button_frame.pack()
 
             # Start the timer
             start_new_thread(count_down, (game_timer, ""))
