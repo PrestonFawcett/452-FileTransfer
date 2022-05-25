@@ -29,7 +29,7 @@ Nino Vilagi -
 
 How to run the program:
 
-Note: You must use Python3 to run the code for sure!
+Note: You must use Python3 and have the tkinter package to run the package, along with pycryptodome.
 
 1. Start the server: python3 server.py
 2. Run the first client: python3 client1.py
