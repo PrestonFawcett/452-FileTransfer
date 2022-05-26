@@ -24,7 +24,7 @@ Note: You must use Python3 and have the tkinter package to run the package, alon
 1. Start the server: python3 server.py
 2. Run the first client: python3 client1.py
 3. Run the second client: python3 client2.py
-4. Enter name for each client
+4. Enter name and desired digital signature for each client
 5. Have fun!
 
 ### Game Rules:
